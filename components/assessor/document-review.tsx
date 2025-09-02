@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CheckCircle, XCircle, AlertCircle, FileText, MessageSquare, Download } from "lucide-react"
+import { CheckCircle, XCircle, AlertCircle, FileText, MessageSquare } from "lucide-react"
 
 interface DocumentIndicator {
   id: string
@@ -206,7 +206,7 @@ export function DocumentReview() {
                             <span className="text-sm">{doc}</span>
                           </div>
                           <Button variant="ghost" size="sm">
-                            <Download className="w-4 h-4" />
+                            View
                           </Button>
                         </div>
                       ))}

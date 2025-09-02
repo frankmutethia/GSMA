@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { FileText, Download, Eye, Upload, Search, Filter, Calendar, User, FolderOpen } from "lucide-react"
+import { FileText, Eye, Upload, Search, Filter, Calendar, User, FolderOpen, Download } from "lucide-react"
 import { format } from "date-fns"
 
 interface Document {
@@ -127,12 +127,8 @@ export function DocumentLibrary() {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle>Document Library</CardTitle>
-            <CardDescription>Manage and review certification documents</CardDescription>
+            <CardDescription>View and track your submitted certification documents</CardDescription>
           </div>
-          <Button>
-            <Upload className="w-4 h-4 mr-2" />
-            Upload Document
-          </Button>
         </div>
       </CardHeader>
       <CardContent>

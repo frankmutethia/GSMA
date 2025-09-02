@@ -1,29 +1,29 @@
 import { RoleGuard } from "@/components/auth/role-guard"
 import { DocumentLibrary } from "@/components/documents/document-library"
-import { DocumentChat } from "@/components/documents/document-chat"
+import { AssessorAuditorChat } from "@/components/documents/assessor-auditor-chat"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FileText, MessageSquare } from "lucide-react"
 
-export default function DocumentsPage() {
+export default function AssessorDocumentsPage() {
   return (
-    <RoleGuard requiredRole="mmp">
+    <RoleGuard requiredRole="assessor">
       <DashboardLayout>
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Document Management</h1>
-            <p className="text-muted-foreground">Centralized document library and communication hub for certification projects</p>
+            <h1 className="text-3xl font-bold text-foreground">Document Review & Communication</h1>
+            <p className="text-muted-foreground">Review certification documents and communicate with MMPs about evidence and requirements</p>
           </div>
 
           <Tabs defaultValue="library" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="library" className="flex items-center gap-2">
                 <FileText className="w-4 h-4" />
-                Document Library
+                Document Review
               </TabsTrigger>
               <TabsTrigger value="chat" className="flex items-center gap-2">
                 <MessageSquare className="w-4 h-4" />
-                Discussion Chat
+                MMP Communication
               </TabsTrigger>
             </TabsList>
 
@@ -32,7 +32,10 @@ export default function DocumentsPage() {
             </TabsContent>
 
             <TabsContent value="chat" className="space-y-6">
-              <DocumentChat />
+              <AssessorAuditorChat 
+                currentUserRole="assessor"
+                currentUserName="Sarah Johnson"
+              />
             </TabsContent>
           </Tabs>
         </div>

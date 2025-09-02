@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, Download, Eye } from "lucide-react"
+import { Search, Eye } from "lucide-react"
 
 export default function AssessorCompletedPage() {
   const completedReviews = [
@@ -42,8 +42,7 @@ export default function AssessorCompletedPage() {
             <p className="text-muted-foreground mt-2">View your completed certification assessments and reports</p>
           </div>
           <Button>
-            <Download className="w-4 h-4 mr-2" />
-            Export Report
+            View Summary
           </Button>
         </div>
 
@@ -82,10 +81,7 @@ export default function AssessorCompletedPage() {
                       <Eye className="w-4 h-4 mr-2" />
                       View Report
                     </Button>
-                    <Button variant="outline" size="sm">
-                      <Download className="w-4 h-4 mr-2" />
-                      Download
-                    </Button>
+                    
                   </div>
                 </div>
               </CardContent>

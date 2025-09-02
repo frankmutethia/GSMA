@@ -20,6 +20,7 @@ import {
   Search,
   Zap,
   Activity,
+  MessageSquare,
 } from "lucide-react"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useRouter } from "next/navigation"
@@ -27,14 +28,13 @@ import Link from "next/link"
 
 interface DashboardLayoutProps {
   children: React.ReactNode
-  role: "mmp" | "assessor" | "auditor" | "admin"
 }
 
-export function DashboardLayout({ children, role }: DashboardLayoutProps) {
+export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [commandOpen, setCommandOpen] = useState(false)
   const [notifications, setNotifications] = useState(3)
-  const { user, logout } = useAuth()
+  const { user, logout, isLoading } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
@@ -48,15 +48,58 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
     return () => document.removeEventListener("keydown", down)
   }, [])
 
+  // Redirect to login if not authenticated (run as an effect, never conditionally)
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.replace("/")
+    }
+  }, [isLoading, user, router])
+
   const handleLogout = () => {
     logout()
     router.push("/")
   }
 
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="text-center space-y-4">
+          <div className="flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold text-foreground">Loading...</h2>
+            <p className="text-muted-foreground">Checking authentication...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Show interim UI while redirecting unauthenticated users
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="text-center space-y-4">
+          <div className="flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold text-foreground">Redirecting to login...</h2>
+            <p className="text-muted-foreground">Please wait...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const role = user.role
+
   const getNavItems = () => {
     const baseItems = [
-      { name: "Overview", href: `/dashboard/${role}`, icon: Home, badge: null },
-      { name: "Documents", href: "/documents", icon: FolderOpen, badge: null },
+      { name: "Overview", href: `/dashboard/${role === "mmp" ? "provider" : role}`, icon: Home, badge: null },
+      { name: "Documents", href: role === "mmp" ? "/documents" : `/dashboard/${role}/documents`, icon: FolderOpen, badge: null },
       { name: "Workflow", href: "/workflow/cert-2025-001", icon: BarChart3, badge: "Live" },
     ]
 
@@ -65,6 +108,7 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
         return [
           ...baseItems,
           { name: "User Management", href: "/dashboard/admin/users", icon: Users, badge: null },
+          { name: "Consultants", href: "/dashboard/admin/consultants", icon: Users, badge: null },
           { name: "System Settings", href: "/dashboard/admin/settings", icon: Settings, badge: null },
         ]
       case "mmp":
@@ -72,6 +116,7 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
           ...baseItems,
           { name: "My Certifications", href: "/dashboard/provider/certifications", icon: FileText, badge: "2" },
           { name: "Submit Documents", href: "/dashboard/provider/submit", icon: Upload, badge: null },
+          { name: "My Consultant", href: "/dashboard/provider/consultant", icon: Users, badge: "1" },
         ]
       case "assessor":
         return [
@@ -84,6 +129,13 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
           ...baseItems,
           { name: "Audit Queue", href: "/dashboard/auditor/queue", icon: FileText, badge: "3" },
           { name: "Completed Audits", href: "/dashboard/auditor/completed", icon: CheckCircle, badge: null },
+        ]
+      case "consultant":
+        return [
+          ...baseItems,
+          { name: "Assigned MMPs", href: "/dashboard/consultant/assigned", icon: Users, badge: null },
+          { name: "Project Overview", href: "/dashboard/consultant/projects", icon: FileText, badge: null },
+          { name: "Communication", href: "/dashboard/consultant/communication", icon: MessageSquare, badge: null },
         ]
       default:
         return baseItems

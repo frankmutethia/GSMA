@@ -6,7 +6,7 @@ interface User {
   id: string
   name: string
   email: string
-  role: "mmp" | "assessor" | "auditor" | "admin"
+  role: "mmp" | "assessor" | "auditor" | "admin" | "consultant"
   company?: string
 }
 
@@ -15,6 +15,8 @@ interface AuthContextType {
   login: (email: string, password: string, role: string) => Promise<void>
   logout: () => void
   isLoading: boolean
+  validateRole: (requiredRole: string) => boolean
+  isAuthenticated: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -27,7 +29,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Check for existing session
     const savedUser = localStorage.getItem("gsma-user")
     if (savedUser) {
-      setUser(JSON.parse(savedUser))
+      try {
+        const parsedUser = JSON.parse(savedUser)
+        setUser(parsedUser)
+      } catch (error) {
+        // Invalid stored user data, clear it
+        localStorage.removeItem("gsma-user")
+      }
     }
     setIsLoading(false)
   }, [])
@@ -51,7 +59,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("gsma-user")
   }
 
-  return <AuthContext.Provider value={{ user, login, logout, isLoading }}>{children}</AuthContext.Provider>
+  const validateRole = (requiredRole: string): boolean => {
+    if (!user) return false
+    return user.role === requiredRole
+  }
+
+  const isAuthenticated = !!user
+
+  return (
+    <AuthContext.Provider 
+      value={{ 
+        user, 
+        login, 
+        logout, 
+        isLoading, 
+        validateRole, 
+        isAuthenticated 
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 export function useAuth() {

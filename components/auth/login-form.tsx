@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useRouter } from "next/navigation"
+import { useAuth } from "./auth-provider"
 
 export function LoginForm() {
   const [email, setEmail] = useState("")
@@ -15,33 +16,42 @@ export function LoginForm() {
   const [role, setRole] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const { login } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
-    // Simulate authentication
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Route based on role
-    switch (role) {
-      case "mmp":
-        router.push("/dashboard/provider")
-        break
-      case "assessor":
-        router.push("/dashboard/assessor")
-        break
-      case "auditor":
-        router.push("/dashboard/auditor")
-        break
-      case "admin":
-        router.push("/dashboard/admin")
-        break
-      default:
-        router.push("/dashboard")
+    try {
+      // Authenticate the user
+      await login(email, password, role)
+      
+      // Route based on role after successful authentication
+      switch (role) {
+        case "mmp":
+          router.push("/dashboard/provider")
+          break
+        case "assessor":
+          router.push("/dashboard/assessor")
+          break
+        case "auditor":
+          router.push("/dashboard/auditor")
+          break
+        case "consultant":
+          router.push("/dashboard/consultant")
+          break
+        case "admin":
+          router.push("/dashboard/admin")
+          break
+        default:
+          router.push("/dashboard")
+      }
+    } catch (error) {
+      console.error("Login failed:", error)
+      // Handle login error (you can add error state here)
+    } finally {
+      setIsLoading(false)
     }
-
-    setIsLoading(false)
   }
 
   return (
@@ -55,6 +65,7 @@ export function LoginForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          autoComplete="email"
         />
       </div>
 
@@ -67,6 +78,7 @@ export function LoginForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          autoComplete="current-password"
         />
       </div>
 
@@ -80,6 +92,7 @@ export function LoginForm() {
             <SelectItem value="mmp">Mobile Money Provider</SelectItem>
             <SelectItem value="assessor">Assessor</SelectItem>
             <SelectItem value="auditor">Auditor</SelectItem>
+            <SelectItem value="consultant">Consultant</SelectItem>
             <SelectItem value="admin">Administrator</SelectItem>
           </SelectContent>
         </Select>

@@ -3,9 +3,23 @@
 import { LoginForm } from "@/components/auth/login-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { readPublicContent } from "@/lib/utils"
 import { CheckCircle, Shield, Users, FileText, Award, TrendingUp } from "lucide-react"
 
 export default function HomePage() {
+  const content = typeof window !== "undefined" ? readPublicContent() : {}
+  const newsletterTitle = (content as any).newsletterTitle || "Get the latest certification updates"
+  const newsletterContent =
+    (content as any).newsletterContent ||
+    "Subscribe to our newsletter for insights on indicators, assessments, and best practices."
+  const articles = ((content as any).articles as string[] | undefined) || [
+    "What is GSMA Mobile Money Certification?",
+    "Application Requirements",
+    "Assessment Overview",
+  ]
+  const contactEmail = (content as any).contactEmail || "support@gsma.com"
+  const contactPhone = (content as any).contactPhone || "+44 20 1234 5678"
+  const contactAddress = (content as any).contactAddress || "London, United Kingdom"
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
@@ -121,6 +135,55 @@ export default function HomePage() {
             </Card>
           </div>
         </div>
+      </div>
+
+      {/* Admin-managed content sections */}
+      <div className="relative z-10 container mx-auto px-4 pb-12">
+        <div className="grid lg:grid-cols-2 gap-8">
+          <Card className="bg-card/80 backdrop-blur-sm border-border/50">
+            <CardHeader>
+              <CardTitle className="text-xl">{newsletterTitle}</CardTitle>
+              <CardDescription>{newsletterContent}</CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="bg-card/80 backdrop-blur-sm border-border/50">
+            <CardHeader>
+              <CardTitle className="text-xl">Articles</CardTitle>
+              <CardDescription>Key topics and resources</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="list-disc pl-5 space-y-2 text-sm text-muted-foreground">
+                {articles.map((a, i) => (
+                  <li key={i}>{a}</li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="mt-8 bg-card/80 backdrop-blur-sm border-border/50">
+          <CardHeader>
+            <CardTitle className="text-xl">Certifier Contacts</CardTitle>
+            <CardDescription>Reach the certification team</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-3 gap-4 text-sm">
+              <div>
+                <div className="text-muted-foreground">Email</div>
+                <div className="font-medium">{contactEmail}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground">Phone</div>
+                <div className="font-medium">{contactPhone}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground">Address</div>
+                <div className="font-medium">{contactAddress}</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Background Pattern */}
